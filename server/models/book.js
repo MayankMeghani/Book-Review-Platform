@@ -2,10 +2,11 @@ import mongoose from 'mongoose';
 
 const bookSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  author: String,
+  author: { type: String, required: true },
   description: String,
   coverImageUrl: String, // URL from Firebase
-  categories: [String],
+  bookFileUrl:{ type: String, required: true },
+  language: { type: String, required: true },
   averageRating: { type: Number, default: 0 },
 }, { timestamps: true });
 
