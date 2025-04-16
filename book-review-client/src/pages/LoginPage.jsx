@@ -1,7 +1,7 @@
 // src/pages/LoginPage.jsx
 
 import React, { useEffect, useState } from "react";
-import { loginUser } from "../Services/userService";
+import { loginUser } from "../services/userService";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
