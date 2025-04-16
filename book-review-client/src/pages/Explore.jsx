@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Search, Plus } from 'lucide-react';
 import BookCard from '../components/BookCard';
-import {  languages } from '../data/sampleData'; // Assuming languages is available in your sampleData
+import { languages } from '../data/sampleData'; // Assuming languages is available in your sampleData
 import AddBookForm from '../forms/Bookform';
 import { getAllBooks } from '../services/bookService';
 import { useAuth } from '../context/AuthContext';
@@ -15,15 +15,22 @@ export default function Explore() {
   const [books, setBooks] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const booksPerPage = 8;
+  const [sortOption, setSortOption] = useState('default');
+  const [loading, setLoading] = useState(false);
 
   const fetchBooks = async () => {
+    setLoading(true);
     try {
       const data = await getAllBooks();
       setBooks(data);
     } catch (error) {
       console.error('Error fetching books:', error);
+    } finally {
+      setLoading(false);
     }
   };
+
+
 
   useEffect(() => {
     fetchBooks();
@@ -37,9 +44,20 @@ export default function Explore() {
     return matchesSearch && matchesLanguage;
   });
 
+  const sortedBooks = [...filteredBooks].sort((a, b) => {
+    if (sortOption === 'rating-desc') {
+      return b.averageRating - a.averageRating;
+    } else if (sortOption === 'rating-asc') {
+      return a.averageRating - b.averageRating;
+    } else {
+      return 0; // default (no sorting)
+    }
+  });
+
+
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
-  const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
+  const currentBooks = sortedBooks.slice(indexOfFirstBook, indexOfLastBook);
   const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
 
   return (
@@ -70,6 +88,16 @@ export default function Explore() {
                 <option key={lang} value={lang}>{lang}</option>
               ))}
             </select>
+            <select
+              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+            >
+              <option value="default">Sort By</option>
+              <option value="rating-desc">Rating: High to Low</option>
+              <option value="rating-asc">Rating: Low to High</option>
+            </select>
+
 
             {/* Add Book Button (Admin only) */}
             {user?.role === 'admin' && (
@@ -92,12 +120,15 @@ export default function Explore() {
         </Modal>
 
         {/* Book Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {currentBooks.map((book) => (
-            <BookCard key={book._id} book={book} />
-          ))}
-        </div>
-
+        {loading ? (
+          <div>Loading...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {currentBooks.map((book) => (
+              <BookCard key={book._id} book={book} />
+            ))}
+          </div>
+        )}
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center space-x-2">
@@ -105,11 +136,10 @@ export default function Explore() {
               <button
                 key={index}
                 onClick={() => setCurrentPage(index + 1)}
-                className={`px-4 py-2 rounded-md ${
-                  currentPage === index + 1
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                }`}
+                className={`px-4 py-2 rounded-md ${currentPage === index + 1
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
               >
                 {index + 1}
               </button>
