@@ -5,6 +5,7 @@ import { fetchFeaturedBooks } from "../services/bookService";
 
 export default function Home() {
   const [featuredBooks, setFeaturedBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,6 +15,8 @@ export default function Home() {
         setFeaturedBooks(books);
       } catch (err) {
         console.error("Failed to fetch featured books", err);
+      } finally {
+        setLoading(false);
       }
     };
     loadBooks();
@@ -23,7 +26,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Welcome to BookReviews</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Welcome to BookNest</h1>
           <p className="text-xl text-gray-600">Discover your next favorite book</p>
         </div>
 
@@ -37,11 +40,19 @@ export default function Home() {
               Explore More
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredBooks.map((book) => (
-              <BookCard key={book._id} book={book} featured />
-            ))}
-          </div>
+
+          {/* Loading Spinner */}
+          {loading ? (
+            <div className="flex justify-center items-center h-40">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-indigo-600 border-opacity-60"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredBooks.map((book) => (
+                <BookCard key={book._id} book={book} featured />
+              ))}
+            </div>
+          )}
         </section>
       </div>
     </div>

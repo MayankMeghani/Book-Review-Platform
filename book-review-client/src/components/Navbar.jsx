@@ -20,7 +20,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <BookOpen className="h-8 w-8 text-indigo-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">BookReviews</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">BookNest</span>
             </Link>
           </div>
 
