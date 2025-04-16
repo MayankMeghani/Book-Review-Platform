@@ -4,7 +4,8 @@ import {
   userLogin,
   getUser,
   updateUser,
-  getAllUsers
+  getAllUsers,
+  changePassword
 } from '../controllers/userController.js';
 import authMiddleware from '../middlewares/authMiddleware.js'; // Protect routes
 
@@ -20,9 +21,11 @@ router.post('/login', userLogin);
 router.get('/profile/:id', authMiddleware, getUser);
 
 // Update user profile (protected route)
+router.put('/profile/change-password', authMiddleware, changePassword);
+
 router.put('/profile/:id', authMiddleware, updateUser);
 
 // Admin route to get all users (protected admin route)
-router.get('/users', authMiddleware, getAllUsers);
+router.get('/all', authMiddleware, getAllUsers);
 
 export default router;

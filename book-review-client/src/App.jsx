@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import Explore from './pages/Explore';
 import BookDetails from './pages/BookDetails';
 import Profile from './pages/Profile';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/book/:id" element={<BookDetails />} />
           <Route path="/profile" element={<Profile />} />

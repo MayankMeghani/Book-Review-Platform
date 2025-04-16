@@ -56,11 +56,21 @@ export const currentUser = {
 };
 
 export const categories = [
-  'All',
   'Fiction',
   'Non-fiction',
   'Mystery',
   'Science Fiction',
   'Romance',
   'Biography',
+];
+
+export const languages = [
+  'All',
+  'English',
+  'Gujarati',
+  'Hindi',
+  'Spanish',
+  'French',
+  'German',
+  'Chinese',
 ];

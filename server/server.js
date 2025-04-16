@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 
 import bookRoutes from './routes/book.routes.js';
 import userRoutes from './routes/user.routes.js';
-
+import reviewRoutes from './routes/review.routes.js';
 dotenv.config();
 
 const app = express();
@@ -21,6 +21,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use('/api/books', bookRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 app.get('/', (req, res) => {
   res.send('Book Review Platform API');

@@ -5,7 +5,12 @@ import jwt from 'jsonwebtoken';
 // User registration
 export const userRegistration = async (req, res) => {
   try {
-    const { username, password, role } = req.body;
+    const { email,username, password, role } = req.body;
+    
+    const existUser = await User.findOne({ email });
+    if (existUser) {
+      return res.status(400).json({ message: 'email already exists' });
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ username });
@@ -19,6 +24,7 @@ export const userRegistration = async (req, res) => {
 
     // Create new user
     const newUser = new User({
+      email,
       username,
       password: hashedPassword,
       role: role || 'user',
@@ -36,6 +42,7 @@ export const userRegistration = async (req, res) => {
     res.status(201).json({
       message: 'User registered successfully',
       user: {
+        email: newUser.email,
         id: newUser._id,
         username: newUser.username,
         role: newUser.role,
@@ -50,10 +57,10 @@ export const userRegistration = async (req, res) => {
 // User login
 export const userLogin = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     // Find user
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -68,7 +75,6 @@ export const userLogin = async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
-    //   { expiresIn: '1h' }
     );
 
     res.json({
@@ -77,7 +83,6 @@ export const userLogin = async (req, res) => {
         id: user._id,
         username: user.username,
         role: user.role,
-        bio: user.bio
       },
       token
     });
@@ -96,6 +101,7 @@ export const getUser = async (req, res) => {
         return res.status(403).json({ message: 'Access denied: Unauthorized user' });
       }
     const user = await User.findById(loggedInUserId).select('-password');
+    
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -128,6 +134,28 @@ export const updateUser = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Error updating profile', error: error.message });
+  }
+};
+
+
+export const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user.userId;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) return res.status(400).json({ message: 'Old password is incorrect' });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating password', error: error.message });
   }
 };
 

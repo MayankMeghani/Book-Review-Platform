@@ -11,9 +11,9 @@ export default function ReviewCard({ review }) {
             <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
           ))}
         </div>
-        <span className="ml-2 text-sm text-gray-500">{new Date(review.date).toLocaleDateString()}</span>
+        <span className="ml-2 text-sm text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
       </div>
-      <p className="text-gray-700">{review.text}</p>
+      <p className="text-gray-700">{review.comment}</p>
     </div>
   );
 }
